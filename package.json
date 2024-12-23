@@ -1,0 +1,45 @@
+{
+    "name": "@altshiftab/web_components",
+    "version": "0.0.1",
+    "homepage": "https://github.com/altshiftab/web_components",
+    "type": "module",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/altshiftab/web_components.git"
+    },
+    "publishConfig": {
+        "registry": "https://npm.pkg.github.com/"
+    },
+    "exports": {
+        "./box": {
+            "import": "./dist/box.js",
+            "types": "./dist/box.d.ts"
+        },
+        "./button": {
+            "import": "./dist/button.js",
+            "types": "./dist/button.d.ts"
+        },
+        "./footer": {
+            "import": "./dist/footer.js",
+            "types": "./dist/footer.d.ts"
+        },
+        "./header": {
+            "import": "./dist/header.js",
+            "types": "./dist/header.d.ts"
+        },
+        "./switch": {
+            "import": "./dist/switch.js",
+            "types": "./dist/switch.d.ts"
+        }
+    },
+    "scripts": {
+        "prepare": "npm run build",
+        "build": "tsc"
+    },
+    "devDependencies": {
+        "typescript": "^5.7.2"
+    },
+    "dependencies": {
+        "lit": "^3.2.1"
+    }
+}
