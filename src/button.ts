@@ -1,6 +1,6 @@
 import {html, LitElement} from "lit";
 import {customElement} from "lit/decorators.js";
-import AltShiftBox from "./box.js";
+import "@altshiftab/web_components/box";
 
 const elementName = "altshift-button";
 
