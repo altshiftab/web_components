@@ -117,7 +117,7 @@ export class AltShiftSwitchLabelled extends LitElement {
     right: string = "";
 
     @query(switchElementName)
-    _switch!: AltShiftSwitch
+    private _switch!: AltShiftSwitch
 
     static styles = css`
         :host {

@@ -1,7 +1,8 @@
 import {css, CSSResultGroup, html, LitElement, nothing, TemplateResult} from "lit";
 import {customElement, property, query} from "lit/decorators.js";
 import {AltShiftSwitchLabelled} from "./switch.js";
-import AltShiftBox from "./box.js";
+import "@altshiftab/web_components/switch";
+import "@altshiftab/web_components/box";
 
 const themeTogglerElementName = "theme-toggler";
 
@@ -19,7 +20,7 @@ class ThemeToggler extends LitElement {
     }
 
     @query("altshift-switch-labelled")
-    _switch!: AltShiftSwitchLabelled
+    private _switch!: AltShiftSwitchLabelled
 
     render() {
         return html`<altshift-switch-labelled left="light" right="dark"/>`;
