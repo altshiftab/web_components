@@ -30,7 +30,9 @@ export default class AltShiftButton extends LitElement {
         this.addEventListener("click", () => {
             switch (this.type) {
             case "submit":
-                return void this._internals.form?.submit();
+                return void this._internals.form?.dispatchEvent(
+                    new Event("submit", {cancelable: true, bubbles: true})
+                );
             case "reset":
                 return void this._internals.form?.reset();
             }
