@@ -10,7 +10,7 @@ export default class AltShiftButton extends LitElement {
     type: string = ""
 
     @query("input")
-    private _inputElement: HTMLElement | null;
+    private _inputElement: HTMLInputElement | undefined;
 
     static styles = css`
         :host {
@@ -24,8 +24,6 @@ export default class AltShiftButton extends LitElement {
     constructor() {
         super();
         this.role = "button";
-
-        this._inputElement = null;
 
         this.addEventListener("click", () => {
             this._inputElement?.click();
