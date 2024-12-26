@@ -6,6 +6,8 @@ const elementName = "altshift-button";
 
 @customElement(elementName)
 export default class AltShiftButton extends LitElement {
+    static formAssociated = true;
+
     @property()
     type: string = ""
 
@@ -23,6 +25,7 @@ export default class AltShiftButton extends LitElement {
 
     constructor() {
         super();
+
         this.role = "button";
 
         this.addEventListener("click", () => {
