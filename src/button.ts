@@ -1,5 +1,5 @@
-import {html, LitElement, css, nothing} from "lit";
-import {customElement, property, query} from "lit/decorators.js";
+import {html, LitElement, css} from "lit";
+import {customElement, property} from "lit/decorators.js";
 import "@altshiftab/web_components/box";
 
 const elementName = "altshift-button";
@@ -11,8 +11,7 @@ export default class AltShiftButton extends LitElement {
     @property()
     type: string = ""
 
-    @query("input")
-    private _inputElement: HTMLInputElement | undefined;
+    private _internals: ElementInternals;
 
     static styles = css`
         :host {
@@ -25,25 +24,24 @@ export default class AltShiftButton extends LitElement {
 
     constructor() {
         super();
-
+        this._internals = this.attachInternals();
         this.role = "button";
 
         this.addEventListener("click", () => {
-            this._inputElement?.click();
+            switch (this.type) {
+            case "submit":
+                return void this._internals.form?.submit();
+            case "reset":
+                return void this._internals.form?.reset();
+            }
         });
     }
 
     render() {
-        const inputElement = this.type === "submit" || this.type === "reset"
-            ? html`<input type="${this.type}"/>`
-            : null
-        ;
-
         return html`
             <altshift-box animated selectable textBox>
                 <slot></slot>
             </altshift-box>
-            ${inputElement || nothing}
         `;
     }
 }
