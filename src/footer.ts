@@ -94,7 +94,8 @@ export class AltShiftFooterNav extends LitElement {
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100%;
+            height: auto;
+            width: auto;
         }
 
         ::slotted(.first-row) {
