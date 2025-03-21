@@ -251,7 +251,6 @@ export default class AltShiftBox extends LitElement {
             .box-container {
                 border: unset;
             }
-
         }
     ` as CSSResultGroup;
 
@@ -281,14 +280,14 @@ export default class AltShiftBox extends LitElement {
             `;
         }
 
-        let filler: TemplateResult | null= html`
+        let filler: TemplateResult | null = html`
             <div class="filler">
                 <div class="filler__top"></div>
                 <svg class="filler__bottom">
                     <line x1="0" y1="0" x2="100%" y2="100%"/>
                 </svg>
             </div>
-        `
+        `;
 
         if (this.contracted) {
             filler = null
@@ -296,9 +295,9 @@ export default class AltShiftBox extends LitElement {
         }
 
         return html`
-            <div class="outer">
+            <div part="outer" class="outer">
                 ${filler || nothing}
-                <div class="box-container">
+                <div part="box-container" class="box-container">
                     <slot @slotchange=${this._onSlotChange}></slot>
                 </div>
             </div>
