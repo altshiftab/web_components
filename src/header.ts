@@ -3,6 +3,7 @@ import {customElement, property, query} from "lit/decorators.js";
 import {AltShiftSwitchLabelled} from "./switch.js";
 import "@altshiftab/web_components/switch";
 import "@altshiftab/web_components/box";
+import {toggledSwitchEventType} from "@altshiftab/web_components/switch";
 
 const themeTogglerElementName = "theme-toggler";
 
@@ -26,6 +27,52 @@ class ThemeToggler extends LitElement {
         return html`<altshift-switch-labelled left="light" right="dark"/>`;
     }
 }
+
+function setDocumentElementTheme(useDarkTheme: boolean) {
+    if (useDarkTheme) {
+        document.documentElement.classList.add('dark-theme');
+    } else {
+        document.documentElement.classList.remove('dark-theme');
+    }
+}
+
+function toggleRootStyles() {
+    const documentElement = document.documentElement;
+    const rootStyle = getComputedStyle(documentElement);
+
+    [
+        'main-color',
+        'text-color',
+        'border-color',
+        'complement-color',
+        'box-color'
+    ].forEach(attribute => {
+        const current_value = rootStyle.getPropertyValue(`--altshift-${attribute}`);
+        const opposite_value = rootStyle.getPropertyValue(`--altshift-opposite-${attribute}`);
+
+        documentElement.style.setProperty(`--altshift-${attribute}`, opposite_value);
+        documentElement.style.setProperty(`--altshift-opposite-${attribute}`, current_value);
+    });
+}
+
+function getThemeIsDark(): boolean {
+    const theme_value = localStorage.getItem('theme');
+    const prefers_dark_color_scheme = Boolean(window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+    switch (theme_value) {
+        case 'light':
+            if (prefers_dark_color_scheme)
+                toggleRootStyles();
+            return false;
+        case 'dark':
+            if (!prefers_dark_color_scheme)
+                toggleRootStyles();
+            return true;
+        default:
+            return prefers_dark_color_scheme;
+    }
+}
+
 
 const headerNavElementName = "altshift-header-nav"
 
@@ -236,9 +283,31 @@ export default class AltShiftHeader extends LitElement {
         }
     `;
 
+    connectedCallback() {
+        this.useDarkTheme = getThemeIsDark();
+        setDocumentElementTheme(this.useDarkTheme);
+
+        this.addEventListener(toggledSwitchEventType, event => {
+            toggleRootStyles();
+            localStorage.setItem('theme', event.detail.value);
+            setDocumentElementTheme(event.detail.value === "dark");
+        });
+
+        const compactMediaQuery = window.matchMedia("(max-width: 1280px)");
+        compactMediaQuery.addEventListener("change", event => {
+            this.compact = event.matches;
+        });
+
+        this.compact = compactMediaQuery.matches;
+
+        super.connectedCallback();
+    }
+
     render() {
         return html`
-            <altshift-header-nav homeUrl=${this.homeUrl} ?compact=${this.compact} ?noMenu=${this.noMenu}><slot></slot></altshift-header-nav>
+            <altshift-header-nav homeUrl=${this.homeUrl} ?compact=${this.compact} ?noMenu=${this.noMenu}>
+                <slot></slot>
+            </altshift-header-nav>
             <div class="theme-toggler-container"><theme-toggler ?useDarkTheme=${this.useDarkTheme}/></div>
         `;
     }
