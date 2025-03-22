@@ -1,6 +1,6 @@
 import {css, CSSResultGroup, html, LitElement, nothing, TemplateResult} from "lit";
 import {customElement, property} from "lit/decorators.js";
-import "./switch.js";
+import "./switch.ts";
 import "@altshiftab/web_components/switch";
 import "@altshiftab/web_components/box";
 import {toggledSwitchEventType} from "@altshiftab/web_components/switch";
