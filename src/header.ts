@@ -117,70 +117,8 @@ export class AltShiftHeaderNav extends LitElement {
             width: 100%;
         }
 
-        .box-content {
-            display: flex;
-            width: 100%;
-        }
-
-        .logo-container {
-            font-size: 2rem;
-            font-weight: 900;
-            display: flex;
-            user-select: none;
-        }
-
-        .logo-a {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 0.5rem 1rem;
-
-            color: var(--text-color);
-            text-decoration: none;
-
-            &:hover, &:focus-visible {
-                background-color: var(--opposite-main-color);
-                color: var(--opposite-text-color);
-            }
-
-            &:focus-visible {
-                outline: none;
-            }
-
-            &:last-of-type {
-                border-left: var(--border-width) solid var(--border-color);
-                border-right: var(--border-width) solid var(--border-color);
-            }
-        }
-
-        .nav-bar {
-            display: flex;
-            justify-content: flex-end;
-            width: 100%;
-        }
-
-        ::slotted(*) {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-        }
-
-        .expand-button-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 0 1rem;
-            margin-left: auto;
-        }
         :host([noMenu]) .expand-button-container {
             display: none;
-        }
-
-        .expand-button-container > svg {
-            cursor: pointer;
-            height: 1.75rem;
-            stroke: var(--text-color);
         }
 
         :host(:not([open])) {
@@ -196,6 +134,69 @@ export class AltShiftHeaderNav extends LitElement {
             display: flex;
             flex-direction: column;
             margin-top: 1rem;
+        }
+
+        ::slotted(*) {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+ 
+        .container {
+            display: flex;
+            width: 100%;
+
+            > .logo-container {
+                font-size: 2rem;
+                font-weight: 900;
+                display: flex;
+                user-select: none;
+
+                > .logo-a {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    padding: 0.5rem 1rem;
+
+                    color: var(--text-color);
+                    text-decoration: none;
+
+                    &:hover, &:focus-visible {
+                        background-color: var(--opposite-main-color);
+                        color: var(--opposite-text-color);
+                    }
+
+                    &:focus-visible {
+                        outline: none;
+                    }
+
+                    &:last-of-type {
+                        border-left: var(--border-width) solid var(--border-color);
+                        border-right: var(--border-width) solid var(--border-color);
+                    }
+                }
+            }
+
+            > .nav-bar {
+                display: flex;
+                justify-content: flex-end;
+                width: 100%;
+            }
+
+            > .expand-button-container {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 0 1rem;
+                margin-left: auto;
+
+                > svg {
+                    cursor: pointer;
+                    height: 1.75rem;
+                    stroke: var(--text-color);
+                }
+            }
         }
     ` as CSSResultGroup;
 
@@ -239,7 +240,7 @@ export class AltShiftHeaderNav extends LitElement {
 
         return html`
             <altshift-box>
-                <div class="box-content">
+                <div class="container">
                     <div class="logo-container">
                         <a class="logo-a" href="${this.homeUrl}">alt</a>
                         <a class="logo-a" href="${this.homeUrl}">shift</a>
@@ -261,13 +262,13 @@ export default class AltShiftHeader extends LitElement {
     homeUrl: string = "/"
 
     @property({type: Boolean, reflect: true})
-    compact: boolean = false
+    compact: boolean = window.matchMedia("(max-width: 1280px)").matches
 
     @property({type: Boolean})
     noMenu: boolean = false
 
     @property({type: Boolean})
-    useDarkTheme: boolean = false;
+    useDarkTheme: boolean = getThemeIsDark()
 
     static styles = css`
         altshift-header-nav[open] + div > theme-toggler {
@@ -284,7 +285,6 @@ export default class AltShiftHeader extends LitElement {
     `;
 
     connectedCallback() {
-        this.useDarkTheme = getThemeIsDark();
         setDocumentElementTheme(this.useDarkTheme);
 
         this.addEventListener(toggledSwitchEventType, event => {
@@ -297,8 +297,6 @@ export default class AltShiftHeader extends LitElement {
         compactMediaQuery.addEventListener("change", event => {
             this.compact = event.matches;
         });
-
-        this.compact = compactMediaQuery.matches;
 
         super.connectedCallback();
     }

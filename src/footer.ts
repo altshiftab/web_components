@@ -176,7 +176,7 @@ export default class AltShiftFooter extends LitElement {
                     <span>Stockholm, Sweden</span>
                     <span>559380-8404</span>
                 </div>
-                <div class="copyright-text">Copyright © 2024</div>
+                <div class="copyright-text">Copyright © 2025</div>
             </section>
         `;
     }
