@@ -1,6 +1,6 @@
 import {css, CSSResultGroup, html, LitElement, nothing, TemplateResult} from "lit";
-import {customElement, property, query} from "lit/decorators.js";
-import {AltShiftSwitchLabelled} from "./switch.js";
+import {customElement, property} from "lit/decorators.js";
+import "./switch.js";
 import "@altshiftab/web_components/switch";
 import "@altshiftab/web_components/box";
 import {toggledSwitchEventType} from "@altshiftab/web_components/switch";
@@ -10,21 +10,16 @@ const themeTogglerElementName = "theme-toggler";
 @customElement(themeTogglerElementName)
 class ThemeToggler extends LitElement {
     @property({type: Boolean, reflect: true})
-    get useDarkTheme(): boolean {
-        return this._switch?.toggledRight ?? false;
-    }
-
-    set useDarkTheme(value: boolean) {
-        if (this._switch) {
-            this._switch.toggledRight = value;
-        }
-    }
-
-    @query("altshift-switch-labelled")
-    private _switch!: AltShiftSwitchLabelled
+    useDarkTheme = false;
 
     render() {
-        return html`<altshift-switch-labelled left="light" right="dark"/>`;
+        return html`
+            <altshift-switch-labelled
+                .toggledRight=${this.useDarkTheme}
+                left="light"
+                right="dark"
+            ></altshift-switch-labelled>
+        `;
     }
 }
 
