@@ -24,7 +24,7 @@ export class ToggledEvent extends CustomEvent<ToggledEventDetails> {
 @customElement(switchElementName)
 export class AltShiftSwitch extends LitElement {
     @property({type: Boolean, reflect: true})
-    toggled: boolean = false;
+    toggled = false;
 
     static styles = css`
         :host {
@@ -53,16 +53,15 @@ export class AltShiftSwitch extends LitElement {
             left: 0;
             height: 100%;
             width: 50%;
-        }
-        @media not (prefers-reduced-motion) {
-            .button-segment {
+
+            @media not (prefers-reduced-motion) {
                 transition: left ease var(--ease-time);
             }
-        }
 
-        .button-segment__content {
-            height: 100%;
-            background-color: var(--opposite-main-color);
+            > .button-segment__content {
+                height: 100%;
+                background-color: var(--opposite-main-color);
+            }
         }
     ` as CSSResultGroup;
 
@@ -99,16 +98,8 @@ const switchLabelledElementName = "altshift-switch-labelled";
 
 @customElement(switchLabelledElementName)
 export class AltShiftSwitchLabelled extends LitElement {
-    @property({type: Boolean, reflect: true})
-    get toggledRight(): boolean {
-        return this._switch?.toggled ?? false;
-    }
-
-    set toggledRight(value: boolean) {
-        if (this._switch) {
-            this._switch.toggled = value;
-        }
-    }
+    @property({type: Boolean, reflect: true })
+    toggledRight = false;
 
     @property()
     left: string = "";
@@ -116,8 +107,14 @@ export class AltShiftSwitchLabelled extends LitElement {
     @property()
     right: string = "";
 
-    @query(switchElementName)
-    private _switch!: AltShiftSwitch
+    private _onSwitchToggled(event: ToggledEvent) {
+        this.toggledRight = event.detail.toggled;
+        event.detail.value = this.value;
+    }
+
+    get value(): string {
+        return this.toggledRight ? this.right : this.left;
+    }
 
     static styles = css`
         :host {
@@ -147,10 +144,6 @@ export class AltShiftSwitchLabelled extends LitElement {
         }
     ` as CSSResultGroup;
 
-    get value(): string {
-        return this.toggledRight ? this.right : this.left;
-    }
-
     constructor() {
         super();
         this.addEventListener(toggledSwitchEventType, (event: ToggledEvent) => {
@@ -161,7 +154,7 @@ export class AltShiftSwitchLabelled extends LitElement {
     render() {
         return html`
             <div class="text-container">${this.left}</div>
-            <altshift-switch></altshift-switch>
+            <altshift-switch .toggled=${this.toggledRight} @switchToggled=${this._onSwitchToggled}></altshift-switch.>
             <div class="text-container">${this.right}</div>
         `;
     }
@@ -169,8 +162,8 @@ export class AltShiftSwitchLabelled extends LitElement {
 
 declare global {
     interface HTMLElementTagNameMap {
-        [switchElementName]: AltShiftSwitch,
         [switchLabelledElementName]: AltShiftSwitchLabelled
+        [switchElementName]: AltShiftSwitch,
     }
 
     interface HTMLElementEventMap {
