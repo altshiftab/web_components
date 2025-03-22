@@ -156,6 +156,17 @@ export default class AltShiftFooter extends LitElement {
         }
     ` as CSSResultGroup;
 
+    connectedCallback() {
+        const compactMediaQuery = window.matchMedia("(max-width: 1280px)");
+        compactMediaQuery.addEventListener("change", event => {
+            this.compact = event.matches;
+        })
+
+        this.compact = compactMediaQuery.matches;
+
+        super.connectedCallback();
+    }
+
     render() {
         return html`
             <altshift-footer-nav homeUrl="${this.homeUrl}" ?compact=${this.compact}><slot></slot></altshift-footer-nav>
