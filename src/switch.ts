@@ -162,7 +162,8 @@ export class AltShiftSwitchLabelled extends LitElement {
 
 declare global {
     interface HTMLElementTagNameMap {
-        [switchLabelledElementName]: AltShiftSwitchLabelled
+        // NOTE: For whatever random reason, this sometimes cases the TypeScript build to fail...
+        // [switchLabelledElementName]: AltShiftSwitchLabelled
         [switchElementName]: AltShiftSwitch,
     }
 
