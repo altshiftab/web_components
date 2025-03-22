@@ -154,7 +154,7 @@ export class AltShiftSwitchLabelled extends LitElement {
     render() {
         return html`
             <div class="text-container">${this.left}</div>
-            <altshift-switch .toggled=${this.toggledRight} @switchToggled=${this._onSwitchToggled}></altshift-switch.>
+            <altshift-switch .toggled=${this.toggledRight} @switchToggled=${this._onSwitchToggled}></altshift-switch>
             <div class="text-container">${this.right}</div>
         `;
     }

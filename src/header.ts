@@ -11,13 +11,7 @@ class ThemeToggler extends LitElement {
     useDarkTheme = false;
 
     render() {
-        return html`
-            <altshift-switch-labelled
-                .toggledRight=${this.useDarkTheme}
-                left="light"
-                right="dark"
-            ></altshift-switch-labelled>
-        `;
+        return html`<altshift-switch-labelled .toggledRight=${this.useDarkTheme} left="light" right="dark"></altshift-switch-labelled>`;
     }
 }
 
