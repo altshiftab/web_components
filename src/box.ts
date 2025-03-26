@@ -272,8 +272,8 @@ export default class AltShiftBox extends LitElement {
         let compensateElements: TemplateResult | null = null;
         if (this.animated) {
             compensateElements = html`
-                <div class="compensate-left"></div>
-                <div class="compensate-bottom">
+                <div part="compensate-left" class="compensate-left"></div>
+                <div part="compensate-bottom" class="compensate-bottom">
                     <div class="compensate-bottom__space"></div>
                     <div class="compensate-bottom__box"></div>
                 </div>
@@ -281,7 +281,7 @@ export default class AltShiftBox extends LitElement {
         }
 
         let filler: TemplateResult | null = html`
-            <div class="filler">
+            <div part="filler" class="filler">
                 <div class="filler__top"></div>
                 <svg class="filler__bottom">
                     <line x1="0" y1="0" x2="100%" y2="100%"/>

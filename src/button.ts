@@ -17,11 +17,17 @@ export default class AltShiftButton extends LitElement {
         :host {
             cursor: pointer;
 
-            > altshift-box::part(box-container){
+            > altshift-box {
                 @media screen and (max-width: 1280px) {
-                    font-size: unset;
-                    margin-top: unset;
-                    border-top: unset;
+                    &::part(box-container) {
+                        font-size: unset;
+                        margin-top: unset;
+                        border-top: unset;
+                    }
+
+                    &::part(compensate-left), &::part(comensate-bottom), &::part(filler) {
+                        display: none;
+                    }
                 }
             }
         }
