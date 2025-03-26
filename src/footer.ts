@@ -21,73 +21,65 @@ export class AltShiftFooterNav extends LitElement {
             grid-template-columns: 1fr min-content;
 
             border: var(--border-width) solid var(--border-color);
+
+            > .logo-container {
+                display: flex;
+
+                grid-row: 1;
+                grid-column: 1;
+
+                font-size: 2rem;
+                font-weight: 900;
+                user-select: none;
+                border-bottom: var(--border-width) solid var(--border-color);
+                border-bottom: var(--border-width) solid var(--border-color);
+
+                > .logo-a {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    padding: 0.5rem 1rem;
+
+                    color: var(--text-color);
+                    text-decoration: none;
+
+                    &:hover, &:focus-visible {
+                        background-color: var(--opposite-main-color);
+                        color: var(--opposite-text-color);
+                    }
+
+                    &:focus-visible {
+                        outline: none;
+                    }
+
+                    &:last-of-type {
+                        border-left: var(--border-width) solid var(--border-color);
+                        border-right: var(--border-width) solid var(--border-color);
+                    }
+                }
+            }
+
+            > nav {
+                display: grid;
+                grid-row: 1 / 3;
+                grid-auto-rows: 1fr;
+                justify-content: end;
+                direction: rtl;
+            }
         }
 
         :host([compact]) {
-            .logo-container {
+            > .logo-container {
                 border-bottom: unset;
             }
 
-            ::slotted(.first-row) {
+            > nav {
                 display: none;
-            }
-
-            nav {
-                grid-row: 1;
-            }
-
-            ::slotted(.second-row) {
-                grid-row: 1;
             }
         }
 
         *, *::before, *::after {
             box-sizing: border-box;
-        }
-
-        .logo-container {
-            display: flex;
-
-            grid-row: 1;
-            grid-column: 1;
-
-            font-size: 2rem;
-            font-weight: 900;
-            user-select: none;
-            border-bottom: var(--border-width) solid var(--border-color);
-            border-bottom: var(--border-width) solid var(--border-color);
-        }
-
-        .logo-a {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 0.5rem 1rem;
-
-            color: var(--text-color);
-            text-decoration: none;
-
-            &:hover, &:focus-visible {
-                background-color: var(--opposite-main-color);
-                color: var(--opposite-text-color);
-            }
-
-            &:focus-visible {
-                outline: none;
-            }
-
-            &:last-of-type {
-                border-left: var(--border-width) solid var(--border-color);
-                border-right: var(--border-width) solid var(--border-color);
-            }
-        }
-
-        nav {
-            display: grid;
-            grid-row: 1 / 3;
-            grid-auto-rows: 1fr;
-            justify-content: end;
-            direction: rtl;
         }
 
         ::slotted(*) {
