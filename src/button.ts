@@ -41,7 +41,7 @@ export default class AltShiftButton extends LitElement {
 
     render() {
         return html`
-            <altshift-box animated selectable textBox>
+            <altshift-box part="box" animated selectable textBox>
                 <slot></slot>
             </altshift-box>
         `;
