@@ -16,9 +16,20 @@ export default class AltShiftButton extends LitElement {
     static styles = css`
         :host {
             cursor: pointer;
+
+            > altshift-box::part(box-container){
+                @media screen and (max-width: 1280px) {
+                    font-size: unset;
+                    margin-top: unset;
+                    border-top: unset;
+                }
+            }
         }
-        input {
-            display: none;
+
+        ::slotted(a) {
+            @media screen and (max-width: 1280px) {
+                padding: 0.65625rem 1.75rem;
+            }
         }
     `;
 
