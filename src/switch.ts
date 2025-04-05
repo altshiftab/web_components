@@ -72,13 +72,14 @@ export class AltShiftSwitch extends LitElement {
 
     constructor() {
         super();
-        this.tabIndex = 1;
+        this.tabIndex = 0;
         this.role = "button";
+        this.ariaLabel = "Toggle";
 
         this.addEventListener("click", this._click.bind(this));
 
         this.addEventListener("keydown", (event: KeyboardEvent) => {
-            if (event.key === 'Enter' || event.key === ' ') {
+            if (event.key === "Enter" || event.key === " ") {
                 this._click();
                 event.preventDefault();
             }
