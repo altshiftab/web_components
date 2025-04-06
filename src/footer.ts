@@ -75,6 +75,15 @@ export class AltShiftFooterNav extends LitElement {
             }
 
             > nav {
+                grid-template-rows: 1fr;
+                grid-row: 1;
+            }
+
+            ::slotted(.first-row) {
+                border-bottom: unset;
+            }
+
+            ::slotted(.second-row) {
                 display: none;
             }
         }
