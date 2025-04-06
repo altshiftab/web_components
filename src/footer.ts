@@ -61,6 +61,7 @@ export class AltShiftFooterNav extends LitElement {
 
             > nav {
                 display: grid;
+                grid-template-rows: 1fr 1fr;
                 grid-row: 1 / 3;
                 grid-auto-rows: 1fr;
                 justify-content: end;
@@ -121,6 +122,9 @@ export default class AltShiftFooter extends LitElement {
     @property({type: Boolean, reflect: true})
     compact: boolean = false
 
+    private _initialCompact: boolean = false;
+    private _compactMediaQuery = window.matchMedia("(max-width: 1280px)");
+
     static styles = css`
         :host([compact]) {
            .org-text {
@@ -148,15 +152,26 @@ export default class AltShiftFooter extends LitElement {
         }
     ` as CSSResultGroup;
 
-    connectedCallback() {
-        const compactMediaQuery = window.matchMedia("(max-width: 1280px)");
-        compactMediaQuery.addEventListener("change", event => {
+    private _mediaChange = (event: MediaQueryListEvent) => {
+        if (!this._initialCompact) {
             this.compact = event.matches;
-        })
+        }
+    }
 
-        this.compact = compactMediaQuery.matches;
+    connectedCallback() {
+        this._initialCompact = this.compact;
+        this._compactMediaQuery.addEventListener("change", this._mediaChange);
+
+        if (!this._initialCompact)
+            this.compact = this._compactMediaQuery.matches;
 
         super.connectedCallback();
+    }
+
+    disconnectedCallback() {
+        this._compactMediaQuery.removeEventListener("change", this._mediaChange);
+
+        super.disconnectedCallback();
     }
 
     render() {
