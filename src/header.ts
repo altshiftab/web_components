@@ -2,6 +2,7 @@ import {css, CSSResultGroup, html, LitElement, nothing, TemplateResult} from "li
 import {customElement, property} from "lit/decorators.js";
 import "@altshiftab/web_components/box";
 import {toggledSwitchEventType} from "@altshiftab/web_components/switch";
+import {ToggledEvent} from "./switch";
 
 const themeTogglerElementName = "theme-toggler";
 
@@ -17,9 +18,9 @@ class ThemeToggler extends LitElement {
 
 function setDocumentElementTheme(useDarkTheme: boolean) {
     if (useDarkTheme) {
-        document.documentElement.classList.add('dark-theme');
+        document.documentElement.classList.add("dark-theme");
     } else {
-        document.documentElement.classList.remove('dark-theme');
+        document.documentElement.classList.remove("dark-theme");
     }
 }
 
@@ -28,11 +29,11 @@ function toggleRootStyles() {
     const rootStyle = getComputedStyle(documentElement);
 
     [
-        'main-color',
-        'text-color',
-        'border-color',
-        'complement-color',
-        'box-color'
+        "main-color",
+        "text-color",
+        "border-color",
+        "complement-color",
+        "box-color"
     ].forEach(attribute => {
         const current_value = rootStyle.getPropertyValue(`--altshift-${attribute}`);
         const opposite_value = rootStyle.getPropertyValue(`--altshift-opposite-${attribute}`);
@@ -43,15 +44,15 @@ function toggleRootStyles() {
 }
 
 function getThemeIsDark(): boolean {
-    const theme_value = localStorage.getItem('theme');
-    const prefers_dark_color_scheme = Boolean(window.matchMedia('(prefers-color-scheme: dark)').matches);
+    const theme_value = localStorage.getItem("theme");
+    const prefers_dark_color_scheme = Boolean(window.matchMedia("(prefers-color-scheme: dark)").matches);
 
     switch (theme_value) {
-        case 'light':
+        case "light":
             if (prefers_dark_color_scheme)
                 toggleRootStyles();
             return false;
-        case 'dark':
+        case "dark":
             if (!prefers_dark_color_scheme)
                 toggleRootStyles();
             return true;
@@ -249,13 +250,16 @@ export default class AltShiftHeader extends LitElement {
     homeUrl: string = "/"
 
     @property({type: Boolean, reflect: true})
-    compact: boolean = window.matchMedia("(max-width: 1280px)").matches
+    compact: boolean = false;
 
-    @property({type: Boolean})
+    @property({type: Boolean, reflect: true})
     noMenu: boolean = false
 
     @property({type: Boolean})
     useDarkTheme: boolean = getThemeIsDark()
+
+    private _initialCompact: boolean = false;
+    private _compactMediaQuery = window.matchMedia("(max-width: 1280px)");
 
     static styles = css`
         altshift-header-nav[open] + div > theme-toggler {
@@ -271,21 +275,35 @@ export default class AltShiftHeader extends LitElement {
         }
     `;
 
+    private _mediaChange = (event: MediaQueryListEvent) => {
+        if (!this._initialCompact) {
+            this.compact = event.matches;
+        }
+    }
+
     connectedCallback() {
         setDocumentElementTheme(this.useDarkTheme);
 
-        this.addEventListener(toggledSwitchEventType, event => {
+        this.addEventListener(toggledSwitchEventType, (event: ToggledEvent) => {
             toggleRootStyles();
-            localStorage.setItem('theme', event.detail.value);
-            setDocumentElementTheme(event.detail.value === "dark");
+            const themeValue = event.detail.value ?? "";
+            localStorage.setItem("theme", themeValue);
+            setDocumentElementTheme(themeValue === "dark");
         });
 
-        const compactMediaQuery = window.matchMedia("(max-width: 1280px)");
-        compactMediaQuery.addEventListener("change", event => {
-            this.compact = event.matches;
-        });
+        this._initialCompact = this.compact;
+        this._compactMediaQuery.addEventListener("change", this._mediaChange);
+
+        if (!this._initialCompact)
+            this.compact = this._compactMediaQuery.matches;
 
         super.connectedCallback();
+    }
+
+    disconnectedCallback() {
+        this._compactMediaQuery.removeEventListener("change", this._mediaChange);
+
+        super.disconnectedCallback();
     }
 
     render() {
