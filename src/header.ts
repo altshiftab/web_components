@@ -89,10 +89,66 @@ export class AltShiftHeaderNav extends LitElement {
             --opposite-text-color: var(--altshift-opposite-text-color, #F8F8F8);
 
             position: relative;
+ 
+            > altshift-box > .container {
+                display: flex;
+                width: 100%;
+
+                > .logo-container {
+                    font-size: 2rem;
+                    font-weight: 900;
+                    display: flex;
+                    user-select: none;
+
+                    > .logo-a {
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        padding: 0.5rem 1rem;
+
+                        color: var(--text-color);
+                        text-decoration: none;
+
+                        &:hover, &:focus-visible {
+                            background-color: var(--opposite-main-color);
+                            color: var(--opposite-text-color);
+                        }
+
+                        &:focus-visible {
+                            outline: none;
+                        }
+
+                        &:last-of-type {
+                            border-left: var(--border-width) solid var(--border-color);
+                            border-right: var(--border-width) solid var(--border-color);
+                        }
+                    }
+                }
+
+                > .nav-bar {
+                    display: flex;
+                    justify-content: flex-end;
+                    width: 100%;
+                }
+
+                > .expand-button-container {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    padding: 0 1rem;
+                    margin-left: auto;
+
+                    > svg {
+                        cursor: pointer;
+                        height: 1.75rem;
+                        stroke: var(--text-color);
+                    }
+                }
+            }
         }
 
         :host([compact]) {
-            altshift-box {
+            > altshift-box {
                 --offset-top: 0;
                 --offset-left: 0;
                 border-top: unset;
@@ -110,18 +166,23 @@ export class AltShiftHeaderNav extends LitElement {
         }
 
         :host(:not([open])) {
-            .nav-menu {
+            > .nav-menu-container > .nav-menu {
                 display: none;
             }
         }
 
-        :host([open]) .nav-menu {
-            position: absolute;
-            width: 100%;
+        :host([open]) {
+            > .nav-menu-container {
+                display: block;
+                width: 100%;
+                position: absolute;
 
-            display: flex;
-            flex-direction: column;
-            margin-top: 1rem;
+                > .nav-menu {
+                    display: flex;
+                    flex-direction: column;
+                    margin-top: 1rem;
+                }
+            }
         }
 
         ::slotted(*) {
@@ -131,61 +192,6 @@ export class AltShiftHeaderNav extends LitElement {
             height: 100%;
         }
  
-        .container {
-            display: flex;
-            width: 100%;
-
-            > .logo-container {
-                font-size: 2rem;
-                font-weight: 900;
-                display: flex;
-                user-select: none;
-
-                > .logo-a {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    padding: 0.5rem 1rem;
-
-                    color: var(--text-color);
-                    text-decoration: none;
-
-                    &:hover, &:focus-visible {
-                        background-color: var(--opposite-main-color);
-                        color: var(--opposite-text-color);
-                    }
-
-                    &:focus-visible {
-                        outline: none;
-                    }
-
-                    &:last-of-type {
-                        border-left: var(--border-width) solid var(--border-color);
-                        border-right: var(--border-width) solid var(--border-color);
-                    }
-                }
-            }
-
-            > .nav-bar {
-                display: flex;
-                justify-content: flex-end;
-                width: 100%;
-            }
-
-            > .expand-button-container {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                padding: 0 1rem;
-                margin-left: auto;
-
-                > svg {
-                    cursor: pointer;
-                    height: 1.75rem;
-                    stroke: var(--text-color);
-                }
-            }
-        }
     ` as CSSResultGroup;
 
     expand_button_click(event: Event) {
@@ -198,7 +204,7 @@ export class AltShiftHeaderNav extends LitElement {
         let navMenu: TemplateResult | null = null;
 
         if (this.compact) {
-            navMenu = html`<nav class="nav-menu"><slot></slot></nav>`;
+            navMenu = html`<div class="nav-menu-container"><nav class="nav-menu"><slot></slot></nav></div>`;
 
             let expandButton: TemplateResult | null;
 
