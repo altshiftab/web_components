@@ -269,7 +269,7 @@ export default class AltShiftHeader extends LitElement {
     private _compactMediaQuery = window.matchMedia("(max-width: 1280px)");
 
     static styles = css`
-        :host() {
+        :host {
             display: block;
 
             > altshift-header-nav[open] + div > theme-toggler {
