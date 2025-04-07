@@ -61,7 +61,6 @@ function getThemeIsDark(): boolean {
     }
 }
 
-
 const headerNavElementName = "altshift-header-nav"
 
 @customElement(headerNavElementName)
@@ -146,14 +145,19 @@ export class AltShiftHeaderNav extends LitElement {
                     }
                 }
             }
+
+            ::slotted(*) {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100%;
+            }
         }
 
-        :host([compact]) {
-            > altshift-box {
-                --offset-top: 0;
-                --offset-left: 0;
-                border-top: unset;
-            }
+        :host([compact]) > altshift-box {
+            --offset-top: 0;
+            --offset-left: 0;
+            border-top: unset;
         }
 
         :host([compact][open]) ::slotted(*) {
@@ -162,37 +166,25 @@ export class AltShiftHeaderNav extends LitElement {
             width: 100%;
         }
 
-        :host([noMenu]) .expand-button-container {
+        :host([noMenu]) > altshift-box > .container > .expand-button-container {
             display: none;
         }
 
-        :host(:not([open])) {
-            > .nav-menu-container > .nav-menu {
-                display: none;
+        :host(:not([open])) > .nav-menu-container > .nav-menu {
+            display: none;
+        }
+
+        :host([open]) > .nav-menu-container {
+            display: block;
+            width: 100%;
+            position: absolute;
+
+            > .nav-menu {
+                display: flex;
+                flex-direction: column;
+                margin-top: 1rem;
             }
         }
-
-        :host([open]) {
-            > .nav-menu-container {
-                display: block;
-                width: 100%;
-                position: absolute;
-
-                > .nav-menu {
-                    display: flex;
-                    flex-direction: column;
-                    margin-top: 1rem;
-                }
-            }
-        }
-
-        ::slotted(*) {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-        }
- 
     ` as CSSResultGroup;
 
     expand_button_click(event: Event) {
