@@ -88,6 +88,7 @@ export class AltShiftHeaderNav extends LitElement {
             --opposite-main-color: var(--altshift-opposite-main-color, #252525);
             --opposite-text-color: var(--altshift-opposite-text-color, #F8F8F8);
 
+            display: block;
             position: relative;
  
             > altshift-box > .container {
@@ -268,16 +269,20 @@ export default class AltShiftHeader extends LitElement {
     private _compactMediaQuery = window.matchMedia("(max-width: 1280px)");
 
     static styles = css`
-        altshift-header-nav[open] + div > theme-toggler {
-            visibility: hidden;
-        }
+        :host() {
+            display: block;
 
-        .theme-toggler-container {
-            position: relative;
-            width: 100%;
-            display: flex;
-            justify-content: flex-end;
-            padding-top: 1rem;
+            > altshift-header-nav[open] + div > theme-toggler {
+                visibility: hidden;
+            }
+
+            > .theme-toggler-container {
+                position: relative;
+                width: 100%;
+                display: flex;
+                justify-content: flex-end;
+                padding-top: 1rem;
+            }
         }
     `;
 
