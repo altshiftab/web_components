@@ -11,6 +11,15 @@ export default class AltShiftButton extends LitElement {
     @property()
     type: string = ""
 
+    @property({attribute: "formmethod"})
+    formMethod: string | null = null;
+
+    @property({attribute: "formnovalidate", type: Boolean})
+    formNoValidate: boolean = false;
+
+    @property({attribute: "formaction"})
+    formAction: string | null = null;
+
     private _internals: ElementInternals;
 
     static styles = css`
@@ -45,6 +54,14 @@ export default class AltShiftButton extends LitElement {
         this.role = "button";
 
         this.addEventListener("click", () => {
+            if (this.formMethod === "dialog") {
+                const dialog = this.closest("dialog");
+                if (dialog) {
+                    dialog.returnValue = this.formAction || "";
+                    return void dialog.close();
+                }
+            }
+
             switch (this.type) {
             case "submit":
                 return void this._internals.form?.dispatchEvent(
