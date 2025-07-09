@@ -37,7 +37,7 @@ export default class AltShiftButton extends LitElement {
                         border-top: unset;
                     }
 
-                    &::part(compensate-left), &::part(comensate-bottom), &::part(filler) {
+                    &::part(compensate-left), &::part(compensate-bottom), &::part(filler) {
                         display: none;
                     }
                 }
