@@ -9,16 +9,19 @@ export default class AltShiftButton extends LitElement {
     static formAssociated = true;
 
     @property()
-    type: string = ""
+    type: string = "submit"
 
-    @property({attribute: "formmethod"})
+    @property()
     formMethod: string | null = null;
 
-    @property({attribute: "formnovalidate", type: Boolean})
+    @property({type: Boolean})
     formNoValidate: boolean = false;
 
-    @property({attribute: "formaction"})
+    @property()
     formAction: string | null = null;
+
+    @property({type: Boolean, reflect: true})
+    disabled: boolean = false;
 
     private _internals: ElementInternals;
 
@@ -41,6 +44,11 @@ export default class AltShiftButton extends LitElement {
             }
         }
 
+        :host([disabled]) {
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
         ::slotted(a) {
             @media screen and (max-width: 1280px) {
                 padding: 0.65625rem 1.75rem;
@@ -52,8 +60,12 @@ export default class AltShiftButton extends LitElement {
         super();
         this._internals = this.attachInternals();
         this.role = "button";
+        this.tabIndex = 0;
 
-        this.addEventListener("click", () => {
+        this.addEventListener("click", event => {
+            if (this.disabled)
+                return void event.preventDefault();
+
             if (this.formMethod === "dialog") {
                 const dialog = this.closest("dialog");
                 if (dialog) {
@@ -64,9 +76,7 @@ export default class AltShiftButton extends LitElement {
 
             switch (this.type) {
             case "submit":
-                return void this._internals.form?.dispatchEvent(
-                    new Event("submit", {cancelable: true, bubbles: true})
-                );
+                return void this._internals.form?.requestSubmit();
             case "reset":
                 return void this._internals.form?.reset();
             }
