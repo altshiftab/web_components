@@ -97,9 +97,10 @@ export default class AltShiftBox extends LitElement {
         }
 
         :host([animated]) {
-            display: inline-block;
-            width: max-content;
+            display: inline-grid;
+            width: 100%;
             height: max-content;
+            grid-template-columns: 1fr auto;
 
             border-top: unset;
 
@@ -110,7 +111,8 @@ export default class AltShiftBox extends LitElement {
             .outer {
                 display: inline-flex;
                 background-color: var(--main-color);
-                width: fit-content;
+                grid-row: 1;
+                width: 100%;
                 border-top: var(--border-width) solid var(--border-color);
             }
 
@@ -122,6 +124,7 @@ export default class AltShiftBox extends LitElement {
             .compensate-left {
                 display: inline-flex;
                 width: 0;
+                grid-row: 1;
             }
 
             .compensate-bottom {
