@@ -27,7 +27,9 @@ export default class AltShiftButton extends LitElement {
 
     static styles = css`
         :host {
+            display: block;
             cursor: pointer;
+            width: 100%;
 
             > altshift-box {
                 @media screen and (max-width: 1280px) {
@@ -50,6 +52,8 @@ export default class AltShiftButton extends LitElement {
         }
 
         ::slotted(a) {
+            width: 100%;
+            display: block;
             @media screen and (max-width: 1280px) {
                 padding: 0.65625rem 1.75rem;
             }
