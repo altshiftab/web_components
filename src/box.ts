@@ -96,54 +96,6 @@ export default class AltShiftBox extends LitElement {
             stroke: var(--border-color);
         }
 
-        :host([animated]) {
-            display: inline-grid;
-            width: 100%;
-            height: max-content;
-            grid-template-columns: 1fr auto;
-
-            border-top: unset;
-
-            .filler {
-                display: inline-flex;
-            }
-
-            .outer {
-                display: inline-flex;
-                background-color: var(--main-color);
-                grid-row: 1;
-                width: 100%;
-                border-top: var(--border-width) solid var(--border-color);
-            }
-
-            .box-container {
-                display: inline-flex;
-                width: unset;
-            }
-
-            .compensate-left {
-                display: inline-flex;
-                width: 0;
-                grid-row: 1;
-            }
-
-            .compensate-bottom {
-                display: flex;
-                width: 100%;
-            }
-
-            .compensate-bottom__space {
-                height: 0;
-            }
-
-            .compensate-bottom__box {
-                height: 0;
-                width: 0;
-                stroke-width: var(--border-width);
-                stroke: var(--border-color);
-            }
-        }
-
         @media not (prefers-reduced-motion) {
             :host([animated]) {
                 .filler {
@@ -245,6 +197,52 @@ export default class AltShiftBox extends LitElement {
             .box-container {
                 margin-top: unset;
                 border-top: unset;
+            }
+        }
+ 
+        :host([animated]) {
+            display: inline-grid;
+            width: 100%;
+            height: max-content;
+            grid-template-columns: 1fr auto;
+
+            border-top: unset;
+
+            .filler {
+                display: inline-flex;
+            }
+
+            .outer {
+                display: inline-flex;
+                background-color: var(--main-color);
+                grid-row: 1;
+                border-top: var(--border-width) solid var(--border-color);
+            }
+
+            .box-container {
+                display: inline-flex;
+            }
+
+            .compensate-left {
+                display: inline-flex;
+                width: 0;
+                grid-row: 1;
+            }
+
+            .compensate-bottom {
+                display: flex;
+                width: 100%;
+            }
+
+            .compensate-bottom__space {
+                height: 0;
+            }
+
+            .compensate-bottom__box {
+                height: 0;
+                width: 0;
+                stroke-width: var(--border-width);
+                stroke: var(--border-color);
             }
         }
 
