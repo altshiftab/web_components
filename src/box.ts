@@ -174,7 +174,6 @@ export default class AltShiftBox extends LitElement {
 
                 font-weight: 700;
                 font-size: 1.125rem;
-                text-align: center;
                 text-transform: uppercase;
                 user-select: none;
                 white-space: nowrap;
@@ -190,6 +189,7 @@ export default class AltShiftBox extends LitElement {
         :host([textBox]:state(text)) {
             .box-container {
                 padding: 0.75rem 2rem;
+                justify-content: center;
             }
         }
 
@@ -215,7 +215,6 @@ export default class AltShiftBox extends LitElement {
             .outer {
                 display: inline-flex;
                 background-color: var(--main-color);
-                grid-row: 1;
                 border-top: var(--border-width) solid var(--border-color);
             }
 
@@ -226,7 +225,6 @@ export default class AltShiftBox extends LitElement {
             .compensate-left {
                 display: inline-flex;
                 width: 0;
-                grid-row: 1;
             }
 
             .compensate-bottom {
