@@ -27,6 +27,8 @@ export default class AltShiftButton extends LitElement {
 
     static styles = css`
         :host {
+            --complement-color: var(--altshift-complement-color, #F8F8F8);
+
             display: block;
             cursor: pointer;
             width: 100%;
@@ -43,6 +45,14 @@ export default class AltShiftButton extends LitElement {
                         display: none;
                     }
                 }
+            }
+        }
+
+        :host(:focus-visible) {
+            outline: none;
+
+            > altshift-box::part(box-container) {
+                background-color: var(--complement-color);
             }
         }
 
