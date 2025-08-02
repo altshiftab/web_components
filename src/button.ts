@@ -1,4 +1,4 @@
-import {html, LitElement, css} from "lit";
+import {html, LitElement, css, PropertyValues} from "lit";
 import {customElement, property} from "lit/decorators.js";
 import "@altshiftab/web_components/box";
 
@@ -77,8 +77,11 @@ export default class AltShiftButton extends LitElement {
         this.tabIndex = 0;
 
         this.addEventListener("click", event => {
-            if (this.disabled)
-                return void event.preventDefault();
+            if (this.disabled) {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                return
+            }
 
             if (this.formMethod === "dialog") {
                 const dialog = this.closest("dialog");
@@ -95,6 +98,33 @@ export default class AltShiftButton extends LitElement {
                 return void this._internals.form?.reset();
             }
         });
+
+        this.addEventListener("keydown", event => {
+            if (this.disabled)
+                return;
+
+            if (event.key === "Enter") {
+                this.click();
+            } else if (event.key === " ") {
+                event.preventDefault();
+            }
+        });
+
+        this.addEventListener("keyup", event => {
+            if (this.disabled)
+                return;
+
+            if (event.key === " ") {
+                this.click();
+            }
+        });
+    }
+
+    updated(changedProperties: PropertyValues) {
+        if (changedProperties.has('disabled')) {
+            this.setAttribute('aria-disabled', String(this.disabled));
+            this.tabIndex = this.disabled ? -1 : 0;
+        }
     }
 
     render() {
