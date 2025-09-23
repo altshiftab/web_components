@@ -1,14 +1,17 @@
 {
     "compilerOptions": {
-        "module": "preserve",
+        "module": "NodeNext",
         "target": "ESNext",
-        "moduleResolution": "bundler",
+        "moduleResolution": "NodeNext",
+        "declaration": true,
         "esModuleInterop": true,
         "strict": true,
+        "rootDir": "./src",
         "outDir": "./dist",
-        "declaration": true,
         "experimentalDecorators": true,
         "useDefineForClassFields": false
     },
-    "include": ["src/**/*"]
+    "include": [
+        "./src"
+    ]
 }

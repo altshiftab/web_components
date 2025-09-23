@@ -2,7 +2,7 @@ import {css, CSSResultGroup, html, LitElement, nothing, TemplateResult} from "li
 import {customElement, property} from "lit/decorators.js";
 import "@altshiftab/web_components/box";
 import {toggledSwitchEventType} from "@altshiftab/web_components/switch";
-import {ToggledEvent} from "./switch";
+import {ToggledEvent} from "./switch.js";
 
 const themeTogglerElementName = "theme-toggler";
 

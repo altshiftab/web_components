@@ -1,5 +1,5 @@
 import {css, CSSResultGroup, html, LitElement} from "lit";
-import {customElement, property, query} from "lit/decorators.js";
+import {customElement, property} from "lit/decorators.js";
 
 const switchElementName = "altshift-switch";
 
