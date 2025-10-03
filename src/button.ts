@@ -74,7 +74,6 @@ export default class AltShiftButton extends LitElement {
         super();
         this._internals = this.attachInternals();
         this.role = "button";
-        this.tabIndex = 0;
 
         this.addEventListener("click", event => {
             if (this.disabled) {
@@ -134,7 +133,11 @@ export default class AltShiftButton extends LitElement {
 
     private updateTabIndex(): void {
         const shouldBeFocusable = !this.disabled && !this.hasFocusableLightDom();
-        this.tabIndex = shouldBeFocusable ? 0 : -1;
+        if (shouldBeFocusable) {
+            this.tabIndex = 0;
+        } else {
+            this.removeAttribute("tabindex");
+        }
     }
 
     updated(changedProperties: PropertyValues) {
@@ -149,7 +152,6 @@ export default class AltShiftButton extends LitElement {
         if (slot) {
             slot.addEventListener("slotchange", () => this.updateTabIndex());
         }
-        // Initialize based on current slotted content
         this.updateTabIndex();
     }
 
