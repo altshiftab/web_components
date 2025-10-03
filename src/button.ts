@@ -120,11 +120,37 @@ export default class AltShiftButton extends LitElement {
         });
     }
 
-    updated(changedProperties: PropertyValues) {
-        if (changedProperties.has('disabled')) {
-            this.setAttribute('aria-disabled', String(this.disabled));
-            this.tabIndex = this.disabled ? -1 : 0;
+    private hasFocusableLightDom(): boolean {
+        const slot = this.renderRoot?.querySelector('slot') as HTMLSlotElement | null;
+        const assigned = slot?.assignedElements({ flatten: true }) ?? [];
+        const selector = 'a[href], button, input, select, textarea, iframe, [tabindex]:not([tabindex="-1"]), [contenteditable]:not([contenteditable="false"])';
+        for (const el of assigned) {
+            if (el.matches(selector)) return true;
+            const nested = el.querySelector(selector);
+            if (nested) return true;
         }
+        return false;
+    }
+
+    private updateTabIndex(): void {
+        const shouldBeFocusable = !this.disabled && !this.hasFocusableLightDom();
+        this.tabIndex = shouldBeFocusable ? 0 : -1;
+    }
+
+    updated(changedProperties: PropertyValues) {
+        if (changedProperties.has("disabled")) {
+            this.setAttribute("aria-disabled", String(this.disabled));
+            this.updateTabIndex();
+        }
+    }
+
+    firstUpdated(_changedProperties: PropertyValues) {
+        const slot = this.renderRoot.querySelector("slot");
+        if (slot) {
+            slot.addEventListener("slotchange", () => this.updateTabIndex());
+        }
+        // Initialize based on current slotted content
+        this.updateTabIndex();
     }
 
     render() {
