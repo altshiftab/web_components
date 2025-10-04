@@ -119,6 +119,7 @@ export class AltShiftHeaderNav extends LitElement {
             display: block;
             width: 100%;
             position: absolute;
+            z-index: 200;
 
             > .nav-menu {
                 display: flex;
