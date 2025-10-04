@@ -1,65 +1,6 @@
 import {css, CSSResultGroup, html, LitElement, nothing, TemplateResult} from "lit";
 import {customElement, property} from "lit/decorators.js";
 import "@altshiftab/web_components/box";
-import {toggledSwitchEventType} from "@altshiftab/web_components/switch";
-import {ToggledEvent} from "./switch.js";
-
-const themeTogglerElementName = "theme-toggler";
-
-@customElement(themeTogglerElementName)
-class ThemeToggler extends LitElement {
-    @property({type: Boolean, reflect: true})
-    useDarkTheme = false;
-
-    render() {
-        return html`<altshift-switch-labelled .toggledRight=${this.useDarkTheme} left="light" right="dark"></altshift-switch-labelled>`;
-    }
-}
-
-function setDocumentElementTheme(useDarkTheme: boolean) {
-    if (useDarkTheme) {
-        document.documentElement.classList.add("dark-theme");
-    } else {
-        document.documentElement.classList.remove("dark-theme");
-    }
-}
-
-function toggleRootStyles() {
-    const documentElement = document.documentElement;
-    const rootStyle = getComputedStyle(documentElement);
-
-    [
-        "main-color",
-        "text-color",
-        "border-color",
-        "complement-color",
-        "box-color"
-    ].forEach(attribute => {
-        const current_value = rootStyle.getPropertyValue(`--altshift-${attribute}`);
-        const opposite_value = rootStyle.getPropertyValue(`--altshift-opposite-${attribute}`);
-
-        documentElement.style.setProperty(`--altshift-${attribute}`, opposite_value);
-        documentElement.style.setProperty(`--altshift-opposite-${attribute}`, current_value);
-    });
-}
-
-function getThemeIsDark(): boolean {
-    const theme_value = localStorage.getItem("theme");
-    const prefers_dark_color_scheme = Boolean(window.matchMedia("(prefers-color-scheme: dark)").matches);
-
-    switch (theme_value) {
-        case "light":
-            if (prefers_dark_color_scheme)
-                toggleRootStyles();
-            return false;
-        case "dark":
-            if (!prefers_dark_color_scheme)
-                toggleRootStyles();
-            return true;
-        default:
-            return prefers_dark_color_scheme;
-    }
-}
 
 const headerNavElementName = "altshift-header-nav"
 
@@ -187,7 +128,7 @@ export class AltShiftHeaderNav extends LitElement {
         }
     ` as CSSResultGroup;
 
-    expand_button_click(event: Event) {
+    expandButtonClick(event: Event) {
         this.open = !this.open;
     }
 
@@ -219,7 +160,7 @@ export class AltShiftHeaderNav extends LitElement {
             }
 
             expandButtonContainer = html`
-                <div class="expand-button-container" @click=${this.expand_button_click}>${expandButton}</div>`
+                <div class="expand-button-container" @click=${this.expandButtonClick}>${expandButton}</div>`
             ;
         } else {
             navBar = html`<nav class="nav-bar"><slot></slot></nav>`;
@@ -254,27 +195,12 @@ export default class AltShiftHeader extends LitElement {
     @property({type: Boolean, reflect: true})
     noMenu: boolean = false
 
-    @property({type: Boolean})
-    useDarkTheme: boolean = getThemeIsDark()
-
     private _initialCompact: boolean = false;
     private _compactMediaQuery = window.matchMedia("(max-width: 1280px)");
 
     static styles = css`
         :host {
             display: block;
-
-            > altshift-header-nav[open] + div > theme-toggler {
-                visibility: hidden;
-            }
-
-            > .theme-toggler-container {
-                position: relative;
-                width: 100%;
-                display: flex;
-                justify-content: flex-end;
-                padding-top: 1rem;
-            }
         }
     `;
 
@@ -285,15 +211,6 @@ export default class AltShiftHeader extends LitElement {
     }
 
     connectedCallback() {
-        setDocumentElementTheme(this.useDarkTheme);
-
-        this.addEventListener(toggledSwitchEventType, (event: ToggledEvent) => {
-            toggleRootStyles();
-            const themeValue = event.detail.value ?? "";
-            localStorage.setItem("theme", themeValue);
-            setDocumentElementTheme(themeValue === "dark");
-        });
-
         this._initialCompact = this.compact;
         this._compactMediaQuery.addEventListener("change", this._mediaChange);
 
@@ -314,14 +231,12 @@ export default class AltShiftHeader extends LitElement {
             <altshift-header-nav homeUrl=${this.homeUrl} ?compact=${this.compact} ?noMenu=${this.noMenu}>
                 <slot></slot>
             </altshift-header-nav>
-            <div class="theme-toggler-container"><theme-toggler ?useDarkTheme=${this.useDarkTheme}/></div>
         `;
     }
 }
 
 declare global {
     interface HTMLElementTagNameMap {
-        [themeTogglerElementName]: ThemeToggler,
         [headerElementName]: AltShiftHeader
     }
 }

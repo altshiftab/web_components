@@ -155,7 +155,7 @@ export class AltShiftSwitchLabelled extends LitElement {
     render() {
         return html`
             <div class="text-container">${this.left}</div>
-            <altshift-switch .toggled=${this.toggledRight} @switchToggled=${this._onSwitchToggled}></altshift-switch>
+            <altshift-switch ?toggled=${this.toggledRight} @switchToggled=${this._onSwitchToggled}></altshift-switch>
             <div class="text-container">${this.right}</div>
         `;
     }
@@ -163,8 +163,7 @@ export class AltShiftSwitchLabelled extends LitElement {
 
 declare global {
     interface HTMLElementTagNameMap {
-        // NOTE: For whatever random reason, this sometimes cases the TypeScript build to fail...
-        // [switchLabelledElementName]: AltShiftSwitchLabelled
+        [switchLabelledElementName]: AltShiftSwitchLabelled
         [switchElementName]: AltShiftSwitch,
     }
 
