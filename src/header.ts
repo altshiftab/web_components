@@ -129,8 +129,24 @@ export class AltShiftHeaderNav extends LitElement {
         }
     ` as CSSResultGroup;
 
-    expandButtonClick(event: Event) {
+    expandButtonClick() {
         this.open = !this.open;
+    }
+
+    navMenuClick(event: Event) {
+        if (!this.compact || !this.open)
+            return;
+
+        for (const target of event.composedPath()) {
+            if (!(target instanceof Element))
+                continue;
+
+            const tag = target.tagName;
+            if (tag === "A" || tag === "BUTTON" || target.getAttribute("role") === "menuitem") {
+                this.open = false;
+                break;
+            }
+        }
     }
 
     render() {
@@ -139,7 +155,7 @@ export class AltShiftHeaderNav extends LitElement {
         let navMenu: TemplateResult | null = null;
 
         if (this.compact) {
-            navMenu = html`<div class="nav-menu-container"><nav class="nav-menu"><slot></slot></nav></div>`;
+            navMenu = html`<div class="nav-menu-container" @click=${this.navMenuClick}><nav class="nav-menu"><slot></slot></nav></div>`;
 
             let expandButton: TemplateResult | null;
 
@@ -198,12 +214,6 @@ export default class AltShiftHeader extends LitElement {
 
     private _initialCompact: boolean = false;
     private _compactMediaQuery = window.matchMedia("(max-width: 1280px)");
-
-    static styles = css`
-        :host {
-            display: block;
-        }
-    `;
 
     private _mediaChange = (event: MediaQueryListEvent) => {
         if (!this._initialCompact) {
