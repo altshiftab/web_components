@@ -32,7 +32,6 @@ export class AltShiftFooterNav extends LitElement {
                 font-weight: 900;
                 user-select: none;
                 border-bottom: var(--border-width) solid var(--border-color);
-                border-bottom: var(--border-width) solid var(--border-color);
 
                 > .logo-a {
                     display: flex;
@@ -131,8 +130,13 @@ export default class AltShiftFooter extends LitElement {
     @property({type: Boolean, reflect: true})
     compact: boolean = false
 
-    private _initialCompact: boolean = false;
-    private _compactMediaQuery = window.matchMedia("(max-width: 1280px)");
+    private _initialCompact: boolean;
+    private _compactMediaQuery: MediaQueryList | null = null;
+
+    constructor() {
+        super();
+        this._initialCompact = this.hasAttribute("compact");
+    }
 
     static styles = css`
         :host([compact]) {
@@ -168,19 +172,19 @@ export default class AltShiftFooter extends LitElement {
     }
 
     connectedCallback() {
-        this._initialCompact = this.compact;
+        super.connectedCallback();
+
+        this._compactMediaQuery ??= window.matchMedia("(max-width: 1280px)");
         this._compactMediaQuery.addEventListener("change", this._mediaChange);
 
         if (!this._initialCompact)
             this.compact = this._compactMediaQuery.matches;
-
-        super.connectedCallback();
     }
 
     disconnectedCallback() {
-        this._compactMediaQuery.removeEventListener("change", this._mediaChange);
-
         super.disconnectedCallback();
+
+        this._compactMediaQuery?.removeEventListener("change", this._mediaChange);
     }
 
     render() {
@@ -192,7 +196,7 @@ export default class AltShiftFooter extends LitElement {
                     <span>Stockholm, Sweden</span>
                     <span>559380-8404</span>
                 </div>
-                <div class="copyright-text">Copyright © 2025</div>
+                <div class="copyright-text">Copyright © ${new Date().getFullYear()}</div>
             </section>
         `;
     }
