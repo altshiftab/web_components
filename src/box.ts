@@ -41,6 +41,25 @@ export default class AltShiftBox extends LitElement {
     private _internals: ElementInternals;
 
     static styles= css`
+        /*
+         * The hover animation moves the box by the offsets and compensates with equally-sized
+         * spacer elements, so the host's total size stays constant. That only holds if the offset
+         * values resolve identically at every use site; registering them as lengths makes
+         * font-relative values (em) resolve where they are declared instead of where they are
+         * used (the box container and the spacers have different font sizes).
+         */
+        @property --altshift-box-offset-top {
+            syntax: "<length>";
+            inherits: true;
+            initial-value: 8px;
+        }
+
+        @property --altshift-box-offset-left {
+            syntax: "<length>";
+            inherits: true;
+            initial-value: 10px;
+        }
+
         :host {
             --offset-top: var(--altshift-box-offset-top, 0.5rem);
             --offset-left: var(--altshift-box-offset-left, 0.625rem);
@@ -173,14 +192,14 @@ export default class AltShiftBox extends LitElement {
                 color: var(--text-color);
 
                 font-weight: 700;
-                font-size: 1.125rem;
+                font-size: var(--altshift-text-box-font-size, 1.125rem);
                 text-transform: uppercase;
                 user-select: none;
                 white-space: nowrap;
             }
 
             ::slotted(*) {
-                padding: 0.75rem 2rem;
+                padding: var(--altshift-text-box-padding, 0.75rem 2rem);
                 text-decoration: none;
                 color: var(--text-color);
             }
@@ -188,7 +207,7 @@ export default class AltShiftBox extends LitElement {
 
         :host([textBox]:state(text)) {
             .box-container {
-                padding: 0.75rem 2rem;
+                padding: var(--altshift-text-box-padding, 0.75rem 2rem);
                 justify-content: center;
             }
         }
