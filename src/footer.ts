@@ -196,7 +196,7 @@ export default class AltShiftFooter extends LitElement {
     render() {
         // First year the site's content was published; the range end tracks the
         // current year so newly added material is covered too.
-        const firstPublicationYear = 2025;
+        const firstPublicationYear = 2022;
         const currentYear = new Date().getFullYear();
         const copyrightYears = currentYear > firstPublicationYear
             ? `${firstPublicationYear}–${currentYear}`
