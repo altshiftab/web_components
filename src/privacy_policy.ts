@@ -7,7 +7,7 @@ export function privacyPolicy(): TemplateResult {
     return html`
         <h1>Privacy</h1>
 
-        <p>This website is built to collect as little data as possible: no cookies, no analytics, no trackers, and no third-party resources. This page describes the little that remains.</p>
+        <p>This website is built to process as little personal data as possible. It sets no cookies, runs no analytics, embeds no trackers, and loads no third-party resources.</p>
 
         <h2>Who we are</h2>
         <p>Alt-Shift AB (org. no. 559380-8404), Stockholm, Sweden, is the controller of the processing described here. Contact: <a href="mailto:privacy@altshift.se">privacy@altshift.se</a>.</p>
