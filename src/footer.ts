@@ -194,6 +194,14 @@ export default class AltShiftFooter extends LitElement {
     }
 
     render() {
+        // First year the site's content was published; the range end tracks the
+        // current year so newly added material is covered too.
+        const firstPublicationYear = 2025;
+        const currentYear = new Date().getFullYear();
+        const copyrightYears = currentYear > firstPublicationYear
+            ? `${firstPublicationYear}–${currentYear}`
+            : String(firstPublicationYear);
+
         return html`
             <altshift-footer-nav homeUrl="${this.homeUrl}" ?compact=${this.compact}><slot></slot></altshift-footer-nav>
             <section class="text-section">
@@ -203,7 +211,7 @@ export default class AltShiftFooter extends LitElement {
                     <span>559380-8404</span>
                 </div>
                 <div class="copyright-section">
-                    <div class="copyright-text">Copyright © ${new Date().getFullYear()}</div>
+                    <div class="copyright-text">© ${copyrightYears} Alt-Shift AB</div>
                     <slot name="legal"></slot>
                 </div>
             </section>
