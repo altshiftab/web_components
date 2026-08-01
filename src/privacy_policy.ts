@@ -5,7 +5,7 @@ import {html, TemplateResult} from "lit";
 // its own look while the text stays single-sourced here.
 export function privacyPolicy(): TemplateResult {
     return html`
-        <h1>Privacy</h1>
+        <h1>Privacy policy</h1>
 
         <p>This website is built to process as little personal data as possible. It sets no cookies, runs no analytics, embeds no trackers, and loads no third-party resources.</p>
 
