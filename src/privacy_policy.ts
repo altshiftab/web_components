@@ -13,7 +13,7 @@ export function privacyPolicy(): TemplateResult {
         <p>Alt-Shift AB (org. no. 559380-8404), Stockholm, Sweden, is the controller of the processing described here. Contact: <a href="mailto:privacy@altshift.se">privacy@altshift.se</a>.</p>
 
         <h2>What we process</h2>
-        <p><strong>Technical logs:</strong> when a request results in an error, we log the event together with your IP address, browser information, and the address of the requested page. Ordinary page views are not logged.</p>
+        <p><strong>Technical data:</strong> when a request results in an error, we log your IP address together with technical details of the request, such as your browser and the page requested. Ordinary page views are not logged.</p>
         <p><strong>Email:</strong> if you email us, we process your email address and the contents of your message.</p>
 
         <h2>Why, and on what legal basis</h2>
