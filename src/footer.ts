@@ -159,9 +159,15 @@ export default class AltShiftFooter extends LitElement {
             padding-bottom: 3rem;
         }
 
-        .copyright-text {
+        .copyright-section {
             display: flex;
+            flex-direction: column;
             align-items: end;
+            justify-content: end;
+        }
+
+        .copyright-section ::slotted(a) {
+            color: inherit;
         }
     ` as CSSResultGroup;
 
@@ -196,7 +202,10 @@ export default class AltShiftFooter extends LitElement {
                     <span>Stockholm, Sweden</span>
                     <span>559380-8404</span>
                 </div>
-                <div class="copyright-text">Copyright © ${new Date().getFullYear()}</div>
+                <div class="copyright-section">
+                    <div class="copyright-text">Copyright © ${new Date().getFullYear()}</div>
+                    <slot name="legal"></slot>
+                </div>
             </section>
         `;
     }
