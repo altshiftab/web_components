@@ -27,6 +27,10 @@
             "import": "./dist/header.js",
             "types": "./dist/header.d.ts"
         },
+        "./privacy_policy": {
+            "import": "./dist/privacy_policy.js",
+            "types": "./dist/privacy_policy.d.ts"
+        },
         "./switch": {
             "import": "./dist/switch.js",
             "types": "./dist/switch.d.ts"
