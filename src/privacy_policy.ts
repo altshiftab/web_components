@@ -18,7 +18,7 @@ export function privacyPolicy(): TemplateResult {
 
         <h2>Why, and on what legal basis</h2>
         <p>We process error logs to operate the website securely and to detect and troubleshoot faults and abuse, based on our legitimate interest in network and information security (Article 6(1)(f) GDPR).</p>
-        <p>Email correspondence is processed based on our legitimate interest in handling your enquiry, or to take steps at your request prior to entering into a contract (Article 6(1)(b) GDPR).</p>
+        <p>Email correspondence is processed based on our legitimate interest in handling your enquiry (Article 6(1)(f) GDPR), or to take steps at your request prior to entering into a contract (Article 6(1)(b) GDPR).</p>
 
         <h2>Retention</h2>
         <p>Logs are deleted automatically after 30 days. Email correspondence is kept only as long as needed for the matter at hand.</p>
