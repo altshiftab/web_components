@@ -30,6 +30,6 @@ export function privacyPolicy(): TemplateResult {
         <p>You have the right to request access to, rectification or erasure of your personal data, the right to restriction of and objection to processing, and the right to data portability. Note that we generally cannot identify a person from our log data, in which case these rights may not apply (Article 11 GDPR). You also have the right to lodge a complaint with the Swedish Authority for Privacy Protection (<a href="https://www.imy.se" target="_blank">IMY</a>).</p>
 
         <h2>Changes</h2>
-        <p>Changes to this policy are published on this page. Last updated: 1 August 2026.</p>
+        <p>Changes to this policy are published on this page. Last updated: 14 August 2026.</p>
     `;
 }
