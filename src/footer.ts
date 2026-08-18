@@ -64,7 +64,6 @@ export class AltShiftFooterNav extends LitElement {
                 grid-row: 1 / 3;
                 grid-auto-rows: 1fr;
                 justify-content: end;
-                direction: rtl;
             }
         }
 
@@ -104,6 +103,10 @@ export class AltShiftFooterNav extends LitElement {
             border-bottom: var(--border-width) solid var(--border-color);
         }
 
+        /* Auto-placement starts every row at the first column, so a second row shorter than
+           the first names the columns it takes with grid-column. (Placing from the right, with
+           direction: rtl, would align it unaided, but reverses the order the items read in
+           against the order they are tabbed in.) */
         ::slotted(.second-row) {
             grid-row: 2;
         }
