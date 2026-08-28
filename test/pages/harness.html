@@ -1,0 +1,461 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>altshift web components test harness</title>
+
+<!--
+    The built components are served from /dist and their imports resolved against the package's own
+    node_modules, so the tests exercise exactly what is published rather than a re-bundled copy.
+    `@altshiftab/web_components/box` is mapped too: button.ts imports its sibling by package name,
+    and nothing links the package into its own node_modules.
+-->
+<script type="importmap">
+{
+    "imports": {
+        "lit": "/node_modules/lit/index.js",
+        "lit/": "/node_modules/lit/",
+        "lit-html": "/node_modules/lit-html/lit-html.js",
+        "lit-html/": "/node_modules/lit-html/",
+        "lit-element": "/node_modules/lit-element/lit-element.js",
+        "lit-element/": "/node_modules/lit-element/",
+        "@lit/reactive-element": "/node_modules/@lit/reactive-element/reactive-element.js",
+        "@lit/reactive-element/": "/node_modules/@lit/reactive-element/",
+        "@lit-labs/ssr-dom-shim": "/node_modules/@lit-labs/ssr-dom-shim/index.js",
+        "@lit-labs/ssr-dom-shim/": "/node_modules/@lit-labs/ssr-dom-shim/",
+        "@altshiftab/web_components/box": "/dist/box.js"
+    }
+}
+</script>
+
+<div id="stage"></div>
+
+<script type="module">
+import {html, render} from "lit";
+import "/dist/box.js";
+import "/dist/button.js";
+import "/dist/switch.js";
+import "/dist/header.js";
+import "/dist/footer.js";
+import {privacyPolicy} from "/dist/privacy_policy.js";
+import {
+    applyTheme,
+    darkClassName,
+    darkThemeValue,
+    lightClassName,
+    lightThemeValue,
+    localStorageThemeKey,
+    prefersDarkTheme,
+    storeTheme,
+    storedThemeValue,
+    themeChangedEventType,
+} from "/dist/theme_toggler.js";
+
+const stage = document.getElementById("stage");
+
+/** Lit renders on a microtask; a rendered custom element settles on its own updateComplete. */
+const settle = () => new Promise(done => setTimeout(done, 20));
+
+/*
+ * Each mount gets a container of its own. lit caches the part it rendered against the container it
+ * rendered into, so re-rendering a different template into a container that has been emptied by
+ * hand leaves it pointing at nodes that are no longer in the document.
+ */
+function mount(markup) {
+    stage.replaceChildren();
+    const container = document.createElement("div");
+    stage.append(container);
+    render(markup, container);
+    return container;
+}
+
+const at = id => stage.querySelector(`#${id}`);
+const cursorOf = element => getComputedStyle(element).cursor;
+
+window.harness = {
+    /*
+     * Resizing the viewport over CDP updates what matchMedia *reports* straight away, but the
+     * `change` event a component listens for is dispatched on a later task. Reading before that
+     * lands would show a component ignoring a resize it is about to answer, so every read that a
+     * resize could have moved waits here first. It is a fixed wait, not a wait for the expected
+     * value: a component whose listener is genuinely dead still reads as unmoved afterwards.
+     */
+    async afterViewportChange() {
+        await new Promise(done => requestAnimationFrame(() => requestAnimationFrame(done)));
+        await new Promise(done => setTimeout(done, 60));
+    },
+
+    /*
+     * A form-associated button reaches its form through ElementInternals rather than by being one,
+     * so submit and reset are counted on the form itself: anything less would assert that the
+     * element thinks it submitted rather than that a form heard it.
+     */
+    async button({type = "submit", disabled = false} = {}) {
+        mount(html`
+            <form id="form" @submit=${e => e.preventDefault()}>
+                <input id="field" name="field" value="typed">
+                <altshift-button id="button" type=${type} ?disabled=${disabled}>Go</altshift-button>
+            </form>
+        `);
+
+        const form = at("form");
+        const button = at("button");
+        await button.updateComplete;
+
+        let submits = 0;
+        let resets = 0;
+        form.addEventListener("submit", () => { submits += 1; });
+        form.addEventListener("reset", () => { resets += 1; });
+
+        // A reset only shows if the field has been moved off its default first.
+        at("field").value = "changed";
+
+        button.click();
+        await settle();
+
+        return {
+            submits,
+            resets,
+            fieldValue: at("field").value,
+            role: button.getAttribute("role"),
+            reflectsDisabled: button.hasAttribute("disabled"),
+        };
+    },
+
+    /*
+     * Keyboard semantics for a button are specific: Enter acts on keydown, Space is suppressed on
+     * keydown (so the page does not scroll) and acts on keyup. Dispatching the raw key events is
+     * the only way to tell those apart.
+     */
+    async buttonKey({key, disabled = false}) {
+        mount(html`
+            <form id="form" @submit=${e => e.preventDefault()}>
+                <altshift-button id="button" type="submit" ?disabled=${disabled}>Go</altshift-button>
+            </form>
+        `);
+
+        const button = at("button");
+        await button.updateComplete;
+
+        let submits = 0;
+        at("form").addEventListener("submit", () => { submits += 1; });
+
+        const keydown = new KeyboardEvent("keydown", {key, bubbles: true, cancelable: true});
+        button.dispatchEvent(keydown);
+        const keydownDefaultPrevented = keydown.defaultPrevented;
+
+        button.dispatchEvent(new KeyboardEvent("keyup", {key, bubbles: true, cancelable: true}));
+        await settle();
+
+        return {submits, keydownDefaultPrevented};
+    },
+
+    /*
+     * `button.click()` on a disabled form-associated element is a no-op in the platform itself, so
+     * it cannot show whether the element guards anything. A dispatched click does reach the
+     * listener -- which is what a click on slotted content, or any programmatic dispatch, looks
+     * like -- and that is the only way the element's own guard is observable.
+     */
+    async buttonDispatchedClick({disabled = false} = {}) {
+        mount(html`
+            <form id="form" @submit=${e => e.preventDefault()}>
+                <altshift-button id="button" type="submit" ?disabled=${disabled}>Go</altshift-button>
+            </form>
+        `);
+
+        const button = at("button");
+        await button.updateComplete;
+
+        let submits = 0;
+        at("form").addEventListener("submit", () => { submits += 1; });
+
+        // A listener past the element's own, to show that a disabled press is stopped rather than
+        // merely ignored: stopImmediatePropagation is what keeps a consumer's handler from running.
+        let reachedOuterListener = 0;
+        at("form").addEventListener("click", () => { reachedOuterListener += 1; });
+
+        button.dispatchEvent(new MouseEvent("click", {bubbles: true, cancelable: true, composed: true}));
+        await settle();
+
+        return {submits, reachedOuterListener};
+    },
+
+    /** formMethod="dialog" closes the enclosing dialog and hands formAction back as returnValue. */
+    async buttonDialog({formAction = "confirm", disabled = false} = {}) {
+        mount(html`
+            <dialog id="dialog">
+                <form>
+                    <altshift-button id="button" formMethod="dialog" formAction=${formAction}
+                                     ?disabled=${disabled}>Close</altshift-button>
+                </form>
+            </dialog>
+        `);
+
+        const dialog = at("dialog");
+        const button = at("button");
+        dialog.show();
+        await button.updateComplete;
+
+        button.click();
+        await settle();
+
+        return {open: dialog.open, returnValue: dialog.returnValue};
+    },
+
+    /*
+     * The switch's contract is the event it emits: bubbling and composed, carrying the state it
+     * moved to. Listening on the document rather than the element proves it crosses the shadow
+     * boundary, which `composed` is what buys.
+     */
+    async switchToggle({start = false, by = "click"} = {}) {
+        mount(html`<altshift-switch id="switch" ?toggled=${start}></altshift-switch>`);
+
+        const element = at("switch");
+        await element.updateComplete;
+
+        const seen = [];
+        const listener = event => seen.push(event.detail.toggled);
+        document.addEventListener("switchToggled", listener);
+
+        if (by === "click")
+            element.click();
+        else
+            element.dispatchEvent(new KeyboardEvent("keydown", {key: by, bubbles: true, cancelable: true}));
+
+        await settle();
+        document.removeEventListener("switchToggled", listener);
+
+        return {
+            toggled: element.toggled,
+            reflected: element.hasAttribute("toggled"),
+            events: seen,
+            role: element.getAttribute("role"),
+            tabIndex: element.tabIndex,
+        };
+    },
+
+    /*
+     * The labelled switch fills the event's `value` in with the label of the side now selected --
+     * a getter over toggledRight, not a stored attribute. Clicking more than once shows that it
+     * tracks the side rather than reporting whatever it was built with.
+     */
+    async switchLabelled({left = "off", right = "on", clicks = 1} = {}) {
+        mount(html`
+            <altshift-switch-labelled id="labelled" left=${left} right=${right}></altshift-switch-labelled>
+        `);
+
+        const element = at("labelled");
+        await element.updateComplete;
+
+        const seen = [];
+        const listener = event => seen.push({toggled: event.detail.toggled, value: event.detail.value});
+        document.addEventListener("switchToggled", listener);
+
+        for (let index = 0; index < clicks; index += 1) {
+            element.shadowRoot.querySelector("altshift-switch").click();
+            await settle();
+            await element.updateComplete;
+        }
+
+        document.removeEventListener("switchToggled", listener);
+
+        return {details: seen, toggledRight: element.toggledRight, value: element.value};
+    },
+
+    /** A plain switch has no labels, so it leaves the event's value unset. */
+    async switchPlainValue() {
+        mount(html`<altshift-switch id="switch"></altshift-switch>`);
+        const element = at("switch");
+        await element.updateComplete;
+
+        const seen = [];
+        const listener = event => seen.push(event.detail.value ?? null);
+        document.addEventListener("switchToggled", listener);
+        element.click();
+        await settle();
+        document.removeEventListener("switchToggled", listener);
+
+        return {values: seen};
+    },
+
+    /*
+     * The theme functions are the part of this package with real logic in them, and localStorage is
+     * the state they turn on, so each case starts from a known store and a forced system
+     * preference. CDP sets the media feature; the page only reads it.
+     */
+    async theme({stored = null, action = null, actionValue = null}) {
+        localStorage.removeItem(localStorageThemeKey);
+        if (stored !== null)
+            localStorage.setItem(localStorageThemeKey, stored);
+
+        const probe = document.createElement("div");
+
+        if (action === "store")
+            storeTheme(actionValue);
+        else if (action === "apply")
+            applyTheme(probe);
+
+        return {
+            stored: localStorage.getItem(localStorageThemeKey),
+            storedThemeValue: storedThemeValue(),
+            prefersDark: prefersDarkTheme(),
+            systemPrefersDark: matchMedia("(prefers-color-scheme: dark)").matches,
+            probeClasses: [...probe.classList].sort(),
+            darkClassName,
+            lightClassName,
+        };
+    },
+
+    /*
+     * Two togglers on one page must not disagree. One is pressed and the other is read, which is
+     * what the themeChanged event on window exists to keep true.
+     */
+    async themeTogglersAgree() {
+        localStorage.removeItem(localStorageThemeKey);
+        mount(html`<theme-toggler id="one"></theme-toggler><theme-toggler id="two"></theme-toggler>`);
+
+        const [one, two] = [at("one"), at("two")];
+        await Promise.all([one.updateComplete, two.updateComplete]);
+
+        const before = {one: one.useDarkTheme, two: two.useDarkTheme};
+        one.shadowRoot.querySelector("button").click();
+        await settle();
+
+        return {
+            before,
+            after: {one: one.useDarkTheme, two: two.useDarkTheme},
+            stored: localStorage.getItem(localStorageThemeKey),
+            documentClasses: [...document.documentElement.classList].sort(),
+            label: one.shadowRoot.querySelector("button").getAttribute("aria-label"),
+        };
+    },
+
+    /** The mark names the theme in force, so which icon is drawn is part of the contract. */
+    async themeTogglerIcon({stored}) {
+        localStorage.removeItem(localStorageThemeKey);
+        if (stored !== null)
+            localStorage.setItem(localStorageThemeKey, stored);
+
+        mount(html`<theme-toggler id="toggler"></theme-toggler>`);
+        const toggler = at("toggler");
+        await toggler.updateComplete;
+
+        const path = toggler.shadowRoot.querySelector("svg path").getAttribute("d");
+
+        return {
+            useDarkTheme: toggler.useDarkTheme,
+            // The moon is one path starting with the crescent's outer arc; the sun is not.
+            icon: path.startsWith("M480-120q-150 0-255-105") ? "moon" : "sun",
+            label: toggler.shadowRoot.querySelector("button").getAttribute("aria-label"),
+        };
+    },
+
+    /*
+     * Reflection runs property -> attribute, so the *property* is what gets set here and the
+     * attribute is what is read back. Setting the attribute and then finding it present would
+     * prove nothing at all about whether the property reflects.
+     */
+    async box(properties) {
+        mount(html`<altshift-box id="box">content</altshift-box>`);
+        const box = at("box");
+        await box.updateComplete;
+
+        for (const name of properties)
+            box[name] = true;
+        await box.updateComplete;
+
+        const slot = box.shadowRoot.querySelector("slot");
+
+        return {
+            reflected: properties.filter(name => box.hasAttribute(name.toLowerCase())),
+            slotted: slot.assignedNodes({flatten: true}).map(node => node.textContent.trim()).filter(Boolean),
+            hasPart: box.shadowRoot.querySelector("[part~=box-container]") !== null,
+        };
+    },
+
+    /*
+     * Mounting and reading are separate calls so that the viewport can be moved across the
+     * breakpoint in between: `compact` set explicitly at mount is meant to pin, and one left alone
+     * is meant to keep following the width.
+     */
+    async mountHeader({compact = null} = {}) {
+        mount(compact === null
+            ? html`<altshift-header id="header" homeUrl="/"><a href="/a">A</a></altshift-header>`
+            : html`<altshift-header id="header" homeUrl="/" ?compact=${compact}><a href="/a">A</a></altshift-header>`);
+
+        await at("header").updateComplete;
+        return this.readHeader();
+    },
+
+    async readHeader() {
+        await this.afterViewportChange();
+
+        const header = at("header");
+        await header.updateComplete;
+
+        const nav = header.shadowRoot.querySelector("altshift-header-nav");
+        await nav?.updateComplete;
+
+        const root = nav?.shadowRoot ?? null;
+
+        return {
+            compact: header.hasAttribute("compact"),
+            hasNav: nav !== null,
+            // Below the breakpoint the nav collapses into a menu; above it, it lies out as a bar.
+            navMenu: root?.querySelector(".nav-menu") != null,
+            navBar: root?.querySelector(".nav-bar") != null,
+            slotted: [...(root?.querySelectorAll("slot") ?? [])]
+                .flatMap(slot => slot.assignedNodes({flatten: true}))
+                .map(node => node.textContent.trim())
+                .filter(Boolean),
+        };
+    },
+
+    async mountFooter({compact = null} = {}) {
+        mount(compact === null
+            ? html`<altshift-footer id="footer" homeUrl="/"><a href="/a">A</a><span slot="legal">Legal</span></altshift-footer>`
+            : html`<altshift-footer id="footer" homeUrl="/" ?compact=${compact}><a href="/a">A</a><span slot="legal">Legal</span></altshift-footer>`);
+
+        await at("footer").updateComplete;
+        return this.readFooter();
+    },
+
+    async readFooter() {
+        await this.afterViewportChange();
+
+        const footer = at("footer");
+        await footer.updateComplete;
+
+        const nav = footer.shadowRoot.querySelector("altshift-footer-nav");
+        await nav?.updateComplete;
+
+        const legalSlot = footer.shadowRoot.querySelector('slot[name="legal"]');
+
+        return {
+            compact: footer.hasAttribute("compact"),
+            hasNav: nav !== null,
+            // The legal slot is named, so it must stay addressable: a site puts its policy link
+            // there and would otherwise lose it silently.
+            legalSlotted: (legalSlot?.assignedNodes({flatten: true}) ?? [])
+                .map(node => node.textContent.trim()).filter(Boolean),
+        };
+    },
+
+    /*
+     * The privacy policy is a legal document shared by every Alt-Shift site, so what is asserted is
+     * that the required parts are present and reachable, not how it reads.
+     */
+    async privacyPolicy() {
+        mount(privacyPolicy());
+
+        const headings = [...stage.querySelectorAll("h1, h2")].map(node => node.textContent.trim());
+        const links = [...stage.querySelectorAll("a")].map(node => node.getAttribute("href"));
+
+        return {
+            headings,
+            links,
+            text: stage.textContent.replace(/\s+/g, " ").trim(),
+        };
+    },
+};
+
+window.ready = true;
+</script>

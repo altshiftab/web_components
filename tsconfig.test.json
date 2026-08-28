@@ -1,0 +1,18 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "noEmit": true,
+        "rootDir": ".",
+        // Node runs the TypeScript as it is, so a test names the file it imports by the
+        // name it has on disk rather than by the name a build would give it.
+        "allowImportingTsExtensions": true,
+        "types": ["node"],
+        "lib": ["ESNext", "DOM"],
+        // button.ts imports its sibling by package name, which resolves to the package's own
+        // emitted dist/box.d.ts. Checking that alongside src/box.ts sees one global element name
+        // declared twice -- an artifact of type-checking the source against its own output, which
+        // no consumer of the package can reach.
+        "skipLibCheck": true
+    },
+    "include": ["./src", "./test"]
+}

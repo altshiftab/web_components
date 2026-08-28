@@ -133,13 +133,8 @@ export default class AltShiftFooter extends LitElement {
     @property({type: Boolean, reflect: true})
     compact: boolean = false
 
-    private _initialCompact: boolean;
+    private _initialCompact: boolean = false;
     private _compactMediaQuery: MediaQueryList | null = null;
-
-    constructor() {
-        super();
-        this._initialCompact = this.hasAttribute("compact");
-    }
 
     static styles = css`
         :host([compact]) {
@@ -182,6 +177,12 @@ export default class AltShiftFooter extends LitElement {
 
     connectedCallback() {
         super.connectedCallback();
+
+        // Read here rather than in the constructor, as the header does. A custom element has no
+        // attributes yet while its constructor runs -- which is why the spec forbids looking at
+        // them there -- so a compact set by a binding or by createElement was invisible and the
+        // pin never took, leaving the viewport free to override a choice the site had made.
+        this._initialCompact = this.compact;
 
         this._compactMediaQuery ??= window.matchMedia("(max-width: 1280px)");
         this._compactMediaQuery.addEventListener("change", this._mediaChange);

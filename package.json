@@ -42,12 +42,14 @@
     },
     "scripts": {
         "prepare": "npm run build",
-        "build": "tsc"
+        "build": "tsc",
+        "test": "npm run build && tsc --noEmit -p tsconfig.test.json && node --test test/*.test.ts"
     },
     "dependencies": {
         "lit": "^3.3.3"
     },
     "devDependencies": {
+        "@types/node": "^26.4.0",
         "typescript": "^7.0.2"
     }
 }
