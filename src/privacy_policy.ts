@@ -25,7 +25,7 @@ export function privacyPolicy(): TemplateResult {
         <p>Email correspondence is kept only as long as needed for the matter at hand.</p>
 
         <h2>Where the data goes</h2>
-        <p>The website runs on Google Cloud in Finland and is delivered through Firebase Hosting's content delivery network, which caches and serves it from locations worldwide, so a request is normally answered from somewhere near whoever made it rather than from Finland. Our email is handled by Google Workspace. Google acts as our processor throughout, under the Google Cloud Data Processing Addendum. Traffic may transit Google's global network; transfers are safeguarded by the EU&ndash;U.S. Data Privacy Framework and standard contractual clauses.</p>
+        <p>The website runs on Google Cloud in Finland and is delivered through Firebase Hosting's content delivery network, which caches and serves it from locations worldwide. Our email is handled by Google Workspace. Google acts as our processor throughout. Traffic may transit Google's global network; transfers are safeguarded by the EU&ndash;U.S. Data Privacy Framework and standard contractual clauses.</p>
         <p>We do not sell or share your data with anyone for marketing.</p>
 
         <h2>Your rights</h2>
