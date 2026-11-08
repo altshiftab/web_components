@@ -1,6 +1,6 @@
 import {after, before, test} from "node:test";
 import assert from "node:assert/strict";
-import {Page} from "./browser.ts";
+import {openHarness, type Page} from "./browser.ts";
 
 const BREAKPOINT = 1280;
 
@@ -15,7 +15,7 @@ interface HeaderState {
 let page: Page;
 
 before(async () => {
-    page = await Page.open("/test/pages/harness.html");
+    page = await openHarness("/test/pages/harness.html");
 }, {timeout: 60_000});
 
 after(async () => {
